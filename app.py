@@ -80,5 +80,6 @@ if predict_btn:
     if subs is None:
         st.warning('Не удалось прочитать файл с субтитрами')
     else:
-        predict = make_predict(subs)
+        with st.spinner(''):
+            predict = make_predict(subs)
         st.success(f'Уровень фильма: {predict}')
