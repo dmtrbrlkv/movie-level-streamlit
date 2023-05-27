@@ -1,0 +1,10 @@
+streamlit
+pandas
+pysrt
+catboost
+scikit-learn
+nltk
+tqdm
+spacy
+pandarallel
+joblib
