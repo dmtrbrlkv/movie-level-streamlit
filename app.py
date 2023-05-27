@@ -61,19 +61,21 @@ def get_subs_text(srt_file):
 
     return subs
 
+
 def make_predict(subs_text):
     df = pd.DataFrame({'subs': [subs]}, index=[srt_file.name])
     df_transformed = pipeline.transform(df[['subs']])
     predict = model.predict(df_transformed)
     return predict[0, 0]
 
-st.set_page_config(page_title='Уровень фильма')
-st.title('Уровень фильма')
+
+st.set_page_config(page_title='Уровень английского в фильме')
+st.title('Уровень английского в фильме')
 
 st.header('Файл с субтитрами')
 srt_file = st.file_uploader('Файл с субтитрами', 'srt', label_visibility='hidden')
 
-predict_btn = st.button('Узнать уровень фильма', use_container_width=True)
+predict_btn = st.button('Узнать уровень английского', use_container_width=True)
 
 if predict_btn:
     subs = get_subs_text(srt_file)
@@ -82,4 +84,4 @@ if predict_btn:
     else:
         with st.spinner(''):
             predict = make_predict(subs)
-        st.success(f'Уровень фильма: {predict}')
+        st.success(f'Уровень английского: {predict}')
