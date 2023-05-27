@@ -47,13 +47,8 @@ load_spacy_model()
 pipeline = load_pipeline()
 model = load_model()
 
-st.title('Уровень фильма')
 
-srt_file = st.file_uploader('Файл с субтиртами', 'srt')
-
-predict_btn = st.button('Узнать уровень фильма')
-
-if predict_btn:
+def get_subs_text(srt_file):
     if srt_file is None:
         st.warning('Загрузите файл с субтитрами')
         exit(0)
@@ -62,10 +57,27 @@ if predict_btn:
         srt_file_path = save_srt(srt_file.name, srt_file.getvalue())
         subs = subs_text(srt_file_path)
     except:
-        st.warning('Не удалось прочитать файл с субтитрами')
-        exit(0)
+        subs = None
 
+    return subs
+
+def make_predict(subs_text):
     df = pd.DataFrame({'subs': [subs]}, index=[srt_file.name])
     df_transformed = pipeline.transform(df[['subs']])
     predict = model.predict(df_transformed)
-    st.success('Уровень фильма: {predict[0, 0]}')
+    return predict[0, 0]
+
+
+st.title('Уровень фильма')
+
+srt_file = st.file_uploader('Файл с субтитрами', 'srt')
+
+predict_btn = st.button('Узнать уровень фильма')
+
+if predict_btn:
+    subs = get_subs_text(srt_file)
+    if subs is None:
+        st.warning('Не удалось прочитать файл с субтитрами')
+    else:
+        predict = make_predict(subs)
+        st.success(f'Уровень фильма: {predict}')
