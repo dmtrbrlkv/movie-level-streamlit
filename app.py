@@ -67,12 +67,13 @@ def make_predict(subs_text):
     predict = model.predict(df_transformed)
     return predict[0, 0]
 
-
+st.set_page_config(page_title='Уровень фильма')
 st.title('Уровень фильма')
 
-srt_file = st.file_uploader('Файл с субтитрами', 'srt')
+st.header('Файл с субтитрами')
+srt_file = st.file_uploader('Файл с субтитрами', 'srt', label_visibility='hidden')
 
-predict_btn = st.button('Узнать уровень фильма')
+predict_btn = st.button('Узнать уровень фильма', use_container_width=True)
 
 if predict_btn:
     subs = get_subs_text(srt_file)
