@@ -8,3 +8,5 @@ tqdm
 spacy
 pandarallel
 joblib
+imbalanced-learn
+seaborn

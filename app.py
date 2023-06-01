@@ -1,6 +1,7 @@
 import streamlit as st
 import pandas as pd
 import joblib
+import seaborn as sns
 from catboost import CatBoostClassifier
 
 from srt_processing import save_srt, subs_text
@@ -8,6 +9,7 @@ from srt_processing import save_srt, subs_text
 from tqdm import tqdm
 
 from pandarallel import pandarallel
+import matplotlib.pyplot as plt
 
 
 @st.cache_resource(show_spinner=False)
@@ -24,28 +26,29 @@ def load_spacy_model():
 
 @st.cache_resource(show_spinner=False)
 def load_pipeline():
-    from transformers import CleanSubs, LemmatizeSub, WordsLevel, Vectorizer, DropSubs
+    from transformers import CleanSubs, LemmatizeSub, WordsLevel, Vectorizer, DropSubs, split_subs
     globals_ = globals()
     globals_['CleanSubs'] = CleanSubs
     globals_['LemmatizeSub'] = LemmatizeSub
     globals_['WordsLevel'] = WordsLevel
     globals_['Vectorizer'] = Vectorizer
     globals_['DropSubs'] = DropSubs
+    globals_['split_subs'] = split_subs
 
     pipeline = joblib.load('best_pipe.ppl')
     return pipeline
 
 
-@st.cache_resource(show_spinner=False)
-def load_model():
-    model = CatBoostClassifier().load_model('best_model.cbm')
-    return model
+# @st.cache_resource(show_spinner=False)
+# def load_model():
+#     model = CatBoostClassifier().load_model('best_model.cbm')
+#     return model
 
 
 init_parallel()
 load_spacy_model()
 pipeline = load_pipeline()
-model = load_model()
+# model = load_model()
 
 
 def get_subs_text(srt_file):
@@ -62,26 +65,38 @@ def get_subs_text(srt_file):
     return subs
 
 
-def make_predict(subs_text):
+def make_predict_proba(subs_text):
     df = pd.DataFrame({'subs': [subs]}, index=[srt_file.name])
-    df_transformed = pipeline.transform(df[['subs']])
-    predict = model.predict(df_transformed)
-    return predict[0, 0]
+    res = {}
+    predict_proba = pipeline.predict_proba(df)
+    for i in range(len(pipeline.classes_)):
+        res[pipeline.classes_[i]] = predict_proba[0][i]
+    return res
 
 
 st.set_page_config(page_title='Уровень английского в фильме')
 st.title('Уровень английского в фильме')
 
 st.header('Файл с субтитрами')
-srt_file = st.file_uploader('Файл с субтитрами', 'srt', label_visibility='hidden')
+srt_files = st.file_uploader('Файл с субтитрами', 'srt', label_visibility='hidden', accept_multiple_files=True)
 
 predict_btn = st.button('Узнать уровень английского', use_container_width=True)
 
 if predict_btn:
-    subs = get_subs_text(srt_file)
-    if subs is None:
-        st.warning('Не удалось прочитать файл с субтитрами')
-    else:
-        with st.spinner(''):
-            predict = make_predict(subs)
-        st.success(f'Уровень английского: {predict}')
+    for srt_file in srt_files:
+        st.header(srt_file.name)
+        subs = get_subs_text(srt_file)
+        if subs is None:
+            st.warning('Не удалось прочитать файл с субтитрами')
+        else:
+            with st.spinner(''):
+                predict_proba = make_predict_proba(subs)
+                predict_proba = pd.DataFrame({'proba': predict_proba.values()}, index=predict_proba.keys())
+                predict = predict_proba['proba'].idxmax()
+                fig = plt.figure(figsize=(1, 1))
+                ax = sns.barplot(x=predict_proba.index, y=predict_proba['proba'])
+                ax.set(title='Вероятность уровня')
+                ax.set(ylabel='')
+
+            st.success(f'Уровень английского: {predict}')
+            st.pyplot(fig)
