@@ -1,15 +1,12 @@
-import streamlit as st
-import pandas as pd
 import joblib
+import matplotlib.pyplot as plt
+import pandas as pd
 import seaborn as sns
-from catboost import CatBoostClassifier
-
-from srt_processing import save_srt, subs_text
-
+import streamlit as st
+from pandarallel import pandarallel
 from tqdm import tqdm
 
-from pandarallel import pandarallel
-import matplotlib.pyplot as plt
+from srt_processing import save_srt, subs_text
 
 
 @st.cache_resource(show_spinner=False)
@@ -48,7 +45,6 @@ def load_pipeline():
 init_parallel()
 load_spacy_model()
 pipeline = load_pipeline()
-# model = load_model()
 
 
 def get_subs_text(srt_file):
