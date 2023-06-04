@@ -16,9 +16,12 @@ def init_parallel():
 
 
 @st.cache_resource(show_spinner=False)
-def load_spacy_model():
+def load_nlp_models():
     from spacy.cli import download as spacy_download
+    import nltk
     spacy_download('en_core_web_sm')
+    nltk.download('punkt')
+    nltk.download('stopwords')
 
 
 @st.cache_resource(show_spinner=False)
@@ -43,7 +46,7 @@ def load_pipeline():
 
 
 init_parallel()
-load_spacy_model()
+load_nlp_models()
 pipeline = load_pipeline()
 
 
