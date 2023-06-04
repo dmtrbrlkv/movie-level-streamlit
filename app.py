@@ -7,27 +7,23 @@ from pandarallel import pandarallel
 from tqdm import tqdm
 
 from srt_processing import subs_text, save_srt
-from transformers import split_subs
 
 
-@st.cache_data(show_spinner=False)
+@st.cache_resource(show_spinner=False)
 def init_parallel():
-    st._logger.get_logger('root').info('init_parallel')
     tqdm.pandas()
     pandarallel.initialize(progress_bar=True)
 
 
-@st.cache_data(show_spinner=False)
+@st.cache_resource(show_spinner=False)
 def load_spacy_model():
-    st._logger.get_logger('root').info('load_spacy_model')
     from spacy.cli import download as spacy_download
     spacy_download('en_core_web_sm')
 
 
-@st.cache_data(show_spinner=False)
+@st.cache_resource(show_spinner=False)
 def load_pipeline():
-    st._logger.get_logger('root').info('load_pipeline')
-    from transformers import CleanSubs, LemmatizeSub, Vectorizer, DropSubs, subs_sampler_x2
+    from transformers import CleanSubs, LemmatizeSub, Vectorizer, DropSubs, subs_sampler_x2, split_subs
     globals_ = globals()
     globals_['CleanSubs'] = CleanSubs
     globals_['LemmatizeSub'] = LemmatizeSub
