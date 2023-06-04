@@ -12,18 +12,21 @@ from transformers import split_subs
 
 @st.cache_resource(show_spinner=False)
 def init_parallel():
+    st._logger.info('init_parallel')
     tqdm.pandas()
     pandarallel.initialize(progress_bar=True)
 
 
 @st.cache_resource(show_spinner=False)
 def load_spacy_model():
+    st._logger.info('load_spacy_model')
     from spacy.cli import download as spacy_download
     spacy_download('en_core_web_sm')
 
 
 @st.cache_resource(show_spinner=False)
 def load_pipeline():
+    st._logger.info('load_pipeline')
     from transformers import CleanSubs, LemmatizeSub, Vectorizer, DropSubs, subs_sampler_x2
     globals_ = globals()
     globals_['CleanSubs'] = CleanSubs
