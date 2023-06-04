@@ -6,7 +6,8 @@ import streamlit as st
 from pandarallel import pandarallel
 from tqdm import tqdm
 
-from srt_processing import save_srt, subs_text
+from srt_processing import subs_text, save_srt
+from transformers import split_subs
 
 
 @st.cache_resource(show_spinner=False)
@@ -23,16 +24,16 @@ def load_spacy_model():
 
 @st.cache_resource(show_spinner=False)
 def load_pipeline():
-    from transformers import CleanSubs, LemmatizeSub, WordsLevel, Vectorizer, DropSubs, split_subs
+    from transformers import CleanSubs, LemmatizeSub, Vectorizer, DropSubs, subs_sampler_x2
     globals_ = globals()
     globals_['CleanSubs'] = CleanSubs
     globals_['LemmatizeSub'] = LemmatizeSub
-    globals_['WordsLevel'] = WordsLevel
     globals_['Vectorizer'] = Vectorizer
     globals_['DropSubs'] = DropSubs
     globals_['split_subs'] = split_subs
+    globals_['subs_sampler_x2'] = subs_sampler_x2
 
-    pipeline = joblib.load('best_pipe.ppl')
+    pipeline = joblib.load('best_pipeline.ppl')
     return pipeline
 
 
