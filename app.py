@@ -39,12 +39,6 @@ def load_pipeline():
     return pipeline
 
 
-# @st.cache_data(show_spinner=False)
-# def load_model():
-#     model = CatBoostClassifier().load_model('best_model.cbm')
-#     return model
-
-
 init_parallel()
 load_nlp_models()
 pipeline = load_pipeline()

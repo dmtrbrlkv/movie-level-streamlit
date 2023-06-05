@@ -12,23 +12,23 @@ import nltk
 
 
 class CleanSubs(BaseEstimator, TransformerMixin):
-    HTML = r'<.*?>'
-    TAG = r'{.*?}'
-    COMMENTS = r'[\(\[][A-Z ]+[\)\]]'
-    LETTERS = r'[^a-zA-Z\']'
-    SPACES = r'([ ])\1+'
-    DOTS = r'[\.]+'
+    HTML = re.compile(r'<.*?>')
+    TAG = re.compile(r'{.*?}')
+    COMMENTS = re.compile(r'[\(\[][A-Z ]+[\)\]]')
+    LETTERS = re.compile(r'[^a-zA-Z\'\.]')
+    SPACES = re.compile(r'([ ])\1+')
+    DOTS = re.compile(r'[\.]+')
 
     @classmethod
     def clean_subs(cls, subs):
-        subs = re.sub(cls.HTML, ' ', subs)  # html тэги меняем на пробел
-        subs = re.sub(cls.TAG, ' ', subs)  # тэги меняем на пробел
-        subs = re.sub(cls.COMMENTS, ' ', subs)  # комменты меняем на пробел
-        subs = re.sub(cls.LETTERS, ' ', subs)  # все что не буквы меняем на пробел
-        subs = re.sub(cls.SPACES, r'\1', subs)  # повторяющиеся пробелы меняем на один пробел
-        subs = re.sub(cls.DOTS, r'.', subs)  # многоточие меняем на точку
-        subs = subs.encode('ascii', 'ignore').decode()  # удаляем все что не ascii символы
-        # subs = ".".join(subs.lower().split('.')[1:-1]) #удаляем первый и последний субтитр (обычно это реклама)
+        subs = re.sub(cls.HTML, ' ', subs) #html тэги меняем на пробел
+        subs = re.sub(cls.TAG, ' ', subs) #тэги меняем на пробел
+        subs = re.sub(cls.COMMENTS, ' ', subs) #комменты меняем на пробел
+        subs = re.sub(cls.LETTERS, ' ', subs) #все что не буквы меняем на пробел
+        subs = re.sub(cls.SPACES, r'\1', subs) #повторяющиеся пробелы меняем на один пробел
+        subs = re.sub(cls.DOTS, r'.', subs) #многоточие меняем на точку
+        subs = subs.encode('ascii', 'ignore').decode() #удаляем все что не ascii символы
+        subs = ' '.join(subs.lower().split('.')[1:-1]) #удаляем первый и последний субтитр (обычно это реклама)
         return subs.lower()
 
     def fit(self, X, y=None):
