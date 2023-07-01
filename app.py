@@ -19,7 +19,6 @@ def init_parallel():
 def load_nlp_models():
     from spacy.cli import download as spacy_download
     import nltk
-    spacy_download('en_core_web_sm')
     nltk.download('punkt')
     nltk.download('stopwords')
 
